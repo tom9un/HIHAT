@@ -24,15 +24,15 @@
     $thisModule_23cdx_ = "phpMyAdmin";    
     
     // login-information for logserver
-    $link23 = mysql_connect("localhost", "root", "root", true );
+    $link23 = mysqli_connect("localhost", "root", "root", true );
     
     
     // *** DO NOT MODIFY ANYTHING BELOW THIS LINE ***  
     if(!$link23) {
         die("No connection to database server!");
     }
-    if(!mysql_select_db("honeyweb")) {
-        die("Unable to use database, error: ".mysql_error());
+    if(!mysqli_select_db("honeyweb")) {
+        die("Unable to use database, error: ".mysqli_error());
     }   
         
     $Array2String = create_function( '$Array','
@@ -105,8 +105,8 @@
                   "' AND Module       = '".addslashes( htmlentities ( $thisModule_23cdx_ , ENT_QUOTES )).
                   "' AND Source =       '".addslashes( htmlentities ( $source_23cdx_ , ENT_QUOTES)). "'";    
                   
-    $result_23cdx_ = mysql_query($sql_23cdx_) OR die(mysql_error());
-    while($row23 = mysql_fetch_assoc($result_23cdx_)) {
+    $result_23cdx_ = mysqli_query($sql_23cdx_) OR die(mysqli_error());
+    while($row23 = mysqli_fetch_assoc($result_23cdx_)) {
         $duplicateCounter_23cdx_++;                 
     }
       
@@ -123,10 +123,10 @@
               '".addslashes( htmlentities ( $thisModule_23cdx_ , ENT_QUOTES )). "')";
                
     if ( $duplicateCounter_23cdx_ == 0 & $arrayContent_23cdx_[ 0 ] != '' )     // don't add duplicates or empty fields
-        mysql_query($sql_23cdx_) OR die(mysql_error());             
+        mysqli_query($sql_23cdx_) OR die(mysqli_error());             
     
-    @mysql_free_result($result_23cdx_);
-    @mysql_close($link23);  
+    @mysqli_free_result($result_23cdx_);
+    @mysqli_close($link23);  
     $value = "";
     $key = "";
     $max_23cdx_ = "";
