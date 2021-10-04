@@ -34,7 +34,7 @@ public class honeypot_creator {
     public static int counter = 0;
     
     // file with code to insert at beginning of each filtered file
-    private static String insertionFile = "insertionfile.txt";
+    private static String insertionFile = "insertionFile.txt";
    
    
     // empty constructor
