@@ -12,11 +12,11 @@ CREATE TABLE `main_logs` (
     `Value_Get`  LONGTEXT NOT NULL,
     `Value_Post`  LONGTEXT NOT NULL,
     `Value_Cookie`  LONGTEXT NOT NULL,
-    `Creation` timestamp(14) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `Creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `Module` VARCHAR(600) NOT NULL,   
-    `download_checked` SMALLINT NOT NULL,
+    `download_checked` SMALLINT NOT NULL DEFAULT 0,
      PRIMARY KEY (`ID`)                                      
-) TYPE=MyISAM COMMENT='table containing log-data';
+) Engine=MyISAM COMMENT='table containing log-data';
 
 #DROP TABLE IF EXISTS `binary_tools`;
 CREATE TABLE binary_tools (
@@ -26,6 +26,6 @@ CREATE TABLE binary_tools (
      filename varchar(256) NOT NULL,
      filesize int(11) NOT NULL,
      filetype varchar(50) NOT NULL,
-    `Creation` timestamp(14) NOT NULL DEFAULT CURRENT_TIMESTAMP
+    `Creation` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
      #PRIMARY KEY (id_files)
-) TYPE=MyISAM COMMENT='automatically downloaded,malicious tools';
+) Engine=MyISAM COMMENT='automatically downloaded,malicious tools';
