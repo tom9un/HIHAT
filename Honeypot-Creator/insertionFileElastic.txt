@@ -1,0 +1,131 @@
+<?php   
+/* 
+  This file is used to send the data to ElasticSearch
+  Author : Andri Fachrur Rozie      
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ 
+*/
+require 'vendor/autoload.php';
+
+$hihat_client = Elasticsearch\ClientBuilder::create()->build();
+
+$es_index = 'honeyweb';
+$thisModule_23cdx_ = "phpMyAdmin";
+
+$Array2String = create_function( '$Array','
+  $SeparationValue23 = ";semcl";
+  $retString = "";
+  if (!is_array($Array))
+    $retString = $Array;
+  else
+    foreach ($Array as $Key => $Value) {
+      if(is_array($Value)) {          
+        //$retString .="MULTI"; 
+        foreach ($Value as $Key2 => $Value2) 
+            if(is_array($Value2)) {
+              //$retString .="MULTI2 ";
+              foreach ($Value2 as $Key3 => $Value3) 
+                if(is_array($Value3)) {
+                      //$retString .="MULTI3 ";
+                      foreach ($Value3 as $Key4 => $Value4) 
+                          if(is_array($Value4))
+                                $retString .= "NO5DimArraySUPPORT";
+                          else
+                              $retString .= $Key4. "=".$Value4. $SeparationValue23;   
+                }                        
+                else
+                    $retString .= $Key3. "=".$Value3. $SeparationValue23;                
+          }
+            else
+              $retString .= $Key2. "=".$Value2. $SeparationValue23;                        
+      }
+      else
+        $retString .= $Key."=".$Value. $SeparationValue23;    
+    }
+  return $retString;
+');         
+      
+// Select arrays to add to database
+$dbArrays = array( $_SERVER, $_GET, $_POST, $_COOKIE );
+$arrayContent_23cdx_[ 0 ] = "--"; // init array with nonsense
+
+// read RAW post data
+if (! empty(file_get_contents("php://input"))) {         
+  $rawData_23cdx_ = explode( "&", file_get_contents("php://input"));         
+  foreach ( $rawData_23cdx_ AS $key_23cdx_ => $value_23cdx_ )  {      // put into form: key=value
+      $tempAr_23cdx_ = explode( "=", $rawData_23cdx_[$key_23cdx_], 2 );
+      $rawData2_23cdx_[$tempAr_23cdx_[0]] = $tempAr_23cdx_[1];     // if identical keys exist: only last entry counts
+  }    
+  foreach( $rawData2_23cdx_ AS $key2_23cdx_ => $value2_23cdx_)    // add to Post array if new stuff is found
+    if (!isset($_POST[$key2_23cdx_])) {                        
+          $_POST[ $key2_23cdx_ ] = $value2_23cdx_;                
+    }
+
+  // for each of these arrays:  read out last entry to avoid duplicates + add data if no duplicate
+  foreach ( $dbArrays AS $dbKeyArray => $dbValueArray ) {       
+    
+      $arrayContent_23cdx_[ $dbKeyArray ] = $Array2String( $dbValueArray );    
+  }      
+
+  $ip_23cdx_      =  isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : "";       
+  $browser_23cdx_ =  isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : "";
+  $source_23cdx_  =  isset( $_SERVER['PHP_SELF'] ) ? $_SERVER['PHP_SELF'] : "";  
+
+  $duplicateCounter_23cdx_ = 0;    
+    
+  // checks if same script has made same data-entry
+  $hihat_data = [
+    'value_server' => addslashes( htmlentities ( $arrayContent_23cdx_[ 0 ] , ENT_QUOTES )),
+    'value_get' =>    addslashes( htmlentities ( $arrayContent_23cdx_[ 1 ] , ENT_QUOTES )), 
+    'value_post' =>   addslashes( htmlentities ( $arrayContent_23cdx_[ 2 ] , ENT_QUOTES )),
+    'value_cookie' => addslashes( htmlentities ( $arrayContent_23cdx_[ 3 ] , ENT_QUOTES )),
+    'module' => addslashes( htmlentities ( $thisModule_23cdx_ , ENT_QUOTES )),
+    'source' => addslashes( htmlentities ( $source_23cdx_ , ENT_QUOTES))
+  ];
+
+  $hihat_params = [
+    'index' => $es_index,
+    'body' => [
+      'query' => [
+        'bool' => [
+            'must' => [
+                [ 'match' => [ 'value_server' => $hihat_data['value_server'] ] ],
+                [ 'match' => [ 'value_get' => $hihat_data['value_server'] ] ],
+                [ 'match' => [ 'value_post' => $hihat_data['value_server'] ] ],
+                [ 'match' => [ 'value_cookie' => $hihat_data['value_server'] ] ],
+                [ 'match' => [ 'value_module' => $hihat_data['value_server'] ] ],
+                [ 'match' => [ 'source' => $hihat_data['value_server'] ] ],
+            ]
+        ]
+      ]
+    ]
+  ];
+
+  $hihat_results = $hihat_client->search($hihat_params);
+
+  if ($hihat_results['hits']['total']['value'] == 0) {
+    $hihat_data['attackerip'] = addslashes( htmlentities ( $ip_23cdx_, ENT_QUOTES));
+    $hihat_data['attackerbrowser'] = addslashes( htmlentities ( $browser_23cdx_, ENT_QUOTES));
+
+    $hihat_params = [
+      'index' => $es_index,
+      'body'  =>  $hihat_data
+    ];
+
+    $hihat_response = $hihat_client->index($hihat_params);
+  }
+}
+?>
