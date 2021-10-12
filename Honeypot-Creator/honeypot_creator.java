@@ -128,25 +128,37 @@ public class honeypot_creator {
     /* main program  
        usage example: "java honeypot_creator /var/www/phpmyadmin/"     */ 
     public static void main(String[] args) {         
-      String directory;    
+      String directory;
+      String database;
       // check arguments
-      if ( args.length > 1 ) {                    
+      if ( args.length > 2 ) {                    
               System.out.println( "Too many parameters!" );
               System.exit( 0 );
+      } else if ( args.length == 2 ) {
+         directory = args[ 0 ];
+         database = args[ 1 ];
+
+         if ( database.equals("mysql") || database.equals("elasticsearch") ) {
+            if ( database.equals("elasticsearch") ) {
+               insertionFile = "insertionFileElastic.txt";
+            }
+         } else {
+            System.out.println("Invalid database. Use mysql or elasticsearch");
+            System.exit(0);
+         }
+
+         System.out.println( "Processing " + args[ 0 ] + ":\n" );
+         listDir( new File( directory ));
+         System.out.println( "\n" + counter + " files have been processed for directory " + directory );
       } else if ( args.length == 1 ) {
-          // default directory
-          if (args[ 0 ].equals("default" ))
-              directory = "C:\\Dokumente und Einstellungen\\Michael Mustermann\\Eigene Dateien\\xampp\\htdocs\\phpmyadm"; //initial vaule for the directory - change for your settings
-          else
-              directory = args[ 0 ];             
+         directory = args[ 0 ];             
                   
-          System.out.println( "Processing " + args[ 0 ] + ":\n" );    
+         System.out.println( "Processing " + args[ 0 ] + ":\n" );    
                   
-          listDir( new File( directory ));
-          //System.out.println( new File("C:\\Dokumente und Einstellungen\\Michael Mustermann\\Eigene Dateien\\xampp\\htdocs\\" + directory));          
-          System.out.println( "\n" + counter + " files have been processed for directory " + directory );                
-      } else 
-          System.out.println( "Missing parameter: please add full directory path!" );
+         listDir( new File( directory ));
+         System.out.println( "\n" + counter + " files have been processed for directory " + directory );
+      } else {
+         System.out.println( "Missing parameter: please add full directory path!" );
+      }
     }
-    
 }
