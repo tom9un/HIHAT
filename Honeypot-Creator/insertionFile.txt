@@ -32,38 +32,38 @@
         die("No connection to database server!");
     }
         
-    $Array2String = create_function( '$Array','
-      $SeparationValue23 = ";semcl";
-      $retString = "";
-      if (!is_array($Array))
-        $retString = $Array;
-      else
-        foreach ($Array as $Key => $Value) {
-          if(is_array($Value)) {          
-            //$retString .="MULTI"; 
-            foreach ($Value as $Key2 => $Value2) 
-               if(is_array($Value2)) {
-                  //$retString .="MULTI2 ";
-                  foreach ($Value2 as $Key3 => $Value3) 
-                    if(is_array($Value3)) {
-                         //$retString .="MULTI3 ";
-                         foreach ($Value3 as $Key4 => $Value4) 
-                              if(is_array($Value4))
-                                   $retString .= "NO5DimArraySUPPORT";
-                              else
-                                  $retString .= $Key4. "=".$Value4. $SeparationValue23;   
-                    }                        
-                    else
-                        $retString .= $Key3. "=".$Value3. $SeparationValue23;                
-              }
-               else
-                  $retString .= $Key2. "=".$Value2. $SeparationValue23;                        
-          }
-          else
-            $retString .= $Key."=".$Value. $SeparationValue23;    
+  $Array2String = function ( $Array ) {
+    $SeparationValue23 = ";semcl";
+    $retString = "";
+    if (!is_array($Array))
+      $retString = $Array;
+    else
+      foreach ($Array as $Key => $Value) {
+        if(is_array($Value)) {          
+          //$retString .="MULTI"; 
+          foreach ($Value as $Key2 => $Value2) 
+              if(is_array($Value2)) {
+                //$retString .="MULTI2 ";
+                foreach ($Value2 as $Key3 => $Value3) 
+                  if(is_array($Value3)) {
+                        //$retString .="MULTI3 ";
+                        foreach ($Value3 as $Key4 => $Value4) 
+                            if(is_array($Value4))
+                                  $retString .= "NO5DimArraySUPPORT";
+                            else
+                                $retString .= $Key4. "=".$Value4. $SeparationValue23;   
+                  }                        
+                  else
+                      $retString .= $Key3. "=".$Value3. $SeparationValue23;                
+            }
+              else
+                $retString .= $Key2. "=".$Value2. $SeparationValue23;                        
         }
+        else
+          $retString .= $Key."=".$Value. $SeparationValue23;    
+      }
       return $retString;
-    ');         
+    };        
          
     // Select arrays to add to database
     $dbArrays = array( $_SERVER, $_GET, $_POST, $_COOKIE );

@@ -25,7 +25,7 @@ $hihat_client = Elasticsearch\ClientBuilder::create()->build();
 $es_index = 'honeyweb';
 $thisModule_23cdx_ = "phpMyAdmin";
 
-$Array2String = create_function( '$Array','
+$Array2String = function ( $Array ) {
   $SeparationValue23 = ";semcl";
   $retString = "";
   if (!is_array($Array))
@@ -56,7 +56,7 @@ $Array2String = create_function( '$Array','
         $retString .= $Key."=".$Value. $SeparationValue23;    
     }
   return $retString;
-');         
+  };         
       
 // Select arrays to add to database
 $dbArrays = array( $_SERVER, $_GET, $_POST, $_COOKIE );
