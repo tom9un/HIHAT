@@ -20,7 +20,11 @@
 */
 require 'vendor/autoload.php';
 
-$hihat_client = Elasticsearch\ClientBuilder::create()->build();
+$hosts = [ '127.0.0.1' ];
+
+$hihat_client = Elasticsearch\ClientBuilder::create()
+                                        ->setHosts($hosts)
+                                        ->build();
 
 $es_index = 'honeyweb';
 $thisModule_23cdx_ = "phpMyAdmin";
@@ -119,6 +123,7 @@ if (! empty(file_get_contents("php://input"))) {
   if ($hihat_results['hits']['total']['value'] == 0) {
     $hihat_data['attackerip'] = addslashes( htmlentities ( $ip_23cdx_, ENT_QUOTES));
     $hihat_data['attackerbrowser'] = addslashes( htmlentities ( $browser_23cdx_, ENT_QUOTES));
+    $hihat_data['creation'] = date('c');
 
     $hihat_params = [
       'index' => $es_index,
